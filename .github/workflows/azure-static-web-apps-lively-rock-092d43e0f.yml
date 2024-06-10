@@ -34,6 +34,9 @@ jobs:
 
       - name: Compilar proyecto
         run: npm run build
+
+      - name: ruta del proyecto
+        run: ls -S
         
       - uses: actions/checkout@v3
         with:
