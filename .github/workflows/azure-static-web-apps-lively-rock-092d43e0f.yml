@@ -31,6 +31,8 @@ jobs:
         run: |
           npm install
           npm run build
+          cd dist
+          ls
         #working-directory: ./
         
       - name: Build And Deploy
