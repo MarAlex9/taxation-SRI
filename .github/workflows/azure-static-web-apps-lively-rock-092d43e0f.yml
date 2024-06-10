@@ -38,6 +38,12 @@ jobs:
       - name: ruta del proyecto
         run: ls -S
         
+      - name: ruta del proyecto2
+        run: cd '/github/workspace/dist'
+
+      - name: ruta del proyecto3
+        run: ls -S
+        
       - uses: actions/checkout@v3
         with:
           submodules: true
