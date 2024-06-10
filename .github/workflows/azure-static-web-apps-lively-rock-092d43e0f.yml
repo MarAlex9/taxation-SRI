@@ -15,8 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - name: Cache Node Install
-        uses: Andrews-McMeel-Universal/cache-next-install@v1.2.0
+      - name: Checkout código
+        uses: actions/checkout@v2
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.2.0' # Puedes especificar la versión que necesites
+
+      - name: Comprobar versión de Node.js
+        run: node -v
         
       - name: Instalar dependencias
         run: npm install
