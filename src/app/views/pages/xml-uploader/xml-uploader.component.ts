@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component  } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { parseString } from 'xml2js';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 interface Factura{
   infoTributaria: InfoTributaria[];
@@ -8,6 +10,7 @@ interface Factura{
 }
 interface  InfoTributaria{
   claveAcceso: string;
+  razonSocial: string;
 }
 interface Detalles {
   detalle: Detalle[];
@@ -18,18 +21,52 @@ interface Detalle {
   cantidad: number;
   precioUnitario: number;
   precioTotalSinImpuesto: number;
+  impuestos: Impuestos[];
 }
+
+interface DetalleMostrar {
+  codigoPrincipal: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  precioTotalSinImpuesto: number;
+  tarifa: number;
+  valor: number;
+  creditoTributario: boolean;
+  razonSocial: string;
+
+}
+
+interface FacturaMostrar{
+  claveAcceso: string;
+  razonSocial: string;
+  detalles: DetalleMostrar;
+}
+
+interface Impuestos {
+  impuesto: Impuesto[];
+}
+interface Impuesto {
+  tarifa: number;
+  baseImponible: number;
+  valor: number;
+}
+
+
 
 @Component({
   selector: 'app-xml-uploader',
   standalone: true,
-  imports: [MatTableModule],
+  imports: [MatTableModule, MatCheckboxModule, CommonModule],
   templateUrl: './xml-uploader.component.html',
   styleUrl: './xml-uploader.component.scss'
 })
 export class XmlUploaderComponent {
-  displayedColumns: string[] = ['codigoPrincipal', 'descripcion', 'cantidad', 'precioUnitario', 'precioTotalSinImpuesto'];
-  dataSource = new MatTableDataSource<Detalle>();
+  displayedColumns: string[] = ['razonSocial', 'cantidad', 'descripcion', 'precioUnitario', 'precioTotalSinImpuesto', 'IVA', 'creditoTributario'];
+
+  dataSource = new MatTableDataSource<DetalleMostrar>();
+
+  listDetalles: DetalleMostrar[] = [];
 
   onFilesSelected(event: any) {
     const files: FileList = event.target.files;
@@ -56,28 +93,45 @@ export class XmlUploaderComponent {
           console.error('Error parsing XML:', errDetalles);
           return;
         }
-        const detalles = this.extractDetalles(resultDetalles.factura);
-        this.dataSource.data = [...this.dataSource.data, ...detalles];
+        this.extractDetalles(resultDetalles.factura);
+        this.dataSource.data = this.listDetalles;
       });
 
     });
   }
 
-  extractDetalles(obj: Factura): Detalle[] {
-    const detalles: Detalle[] = [];
+  extractDetalles(obj: Factura): void{
     const detallesArray = obj.detalles[0].detalle;
-
-    detallesArray.forEach((detalle: any) => {
-      const detalleObj: Detalle = {
-        codigoPrincipal: detalle.codigoPrincipal[0],
-        descripcion: detalle.descripcion[0],
-        cantidad: parseFloat(detalle.cantidad[0]),
-        precioUnitario: parseFloat(detalle.precioUnitario[0]),
-        precioTotalSinImpuesto: parseFloat(detalle.precioTotalSinImpuesto[0])
-      };
-      detalles.push(detalleObj);
-    });
-
-    return detalles;
+    // if(!this.listDetalles.find(l => l.claveAcceso === obj.infoTributaria[0].claveAcceso[0])){
+    //   const factura: FacturaMostrar = {
+    //     razonSocial: obj.infoTributaria[0].razonSocial[0],
+    //     claveAcceso: obj.infoTributaria[0].claveAcceso[0],
+    //     detalles = []
+    //   }
+      detallesArray.forEach((detalle: any) => {
+        const detalleObj: DetalleMostrar = {
+          codigoPrincipal: detalle.codigoPrincipal[0],
+          descripcion: detalle.descripcion[0],
+          cantidad: parseFloat(detalle.cantidad[0]),
+          precioUnitario: parseFloat(detalle.precioUnitario[0]),
+          precioTotalSinImpuesto: parseFloat(detalle.precioTotalSinImpuesto[0]),
+          tarifa: detalle.impuestos[0].impuesto[0].tarifa[0],
+          valor: detalle.impuestos[0].impuesto[0].valor[0],
+          razonSocial: obj.infoTributaria[0].razonSocial[0],
+          creditoTributario: false
+        };
+        this.groupAdd(detalleObj);
+      });
+    //}
   }
+
+  groupAdd(detalleM: DetalleMostrar): void {
+  //  if(!this.listDetalles.find(l => l.claveAcceso === detalleM.claveAcceso))
+        this.listDetalles.push(detalleM);
+  }
+    /** The label for the checkbox on the passed row */
+    checkboxLabel(row?: DetalleMostrar): void {
+      console.error(row);
+      //return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row}`;
+    }
 }
