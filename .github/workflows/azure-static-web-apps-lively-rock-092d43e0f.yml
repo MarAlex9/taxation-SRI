@@ -26,14 +26,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '22.x'
+
+      - name: Setup Node.js 2
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.x'
           
       - name: Build app
         run: |
           npm install
-          npm run build
-          cd dist
-          ls
-        #working-directory: ./
+          npm run build         
+        working-directory: ./
         
       - name: Build And Deploy
         id: builddeploy
@@ -42,12 +45,11 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_ROCK_092D43E0F }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/dist/taxation-sri/index.html" # App source code path
-          #api_location: "" # Api source code path - optional
-          #output_location: "dist"
+          app_location: '/'
+          output_location: ''
           skip_app_build: true
+          skip_api_build: true
+          is_static_export: true
           
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
