@@ -38,14 +38,11 @@ jobs:
 
       - name: Compilar proyecto
         run: npm run build
-
-      - name: ruta del proyecto
-        run: cd ${{ github.workspace }}
         
       - name: ruta del proyecto2
         run: echo $PWD
 
-      - name: ruta del proyecto3
+      - name: archvios del proyecto
         run: ls -S
         
       - name: Build And Deploy
@@ -57,7 +54,7 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/dist/taxation-SRI" # App source code path
+          app_location: "/dist" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "{angular.json#Object.values(data.projects)[0].architect.build.options.outputPath}" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
