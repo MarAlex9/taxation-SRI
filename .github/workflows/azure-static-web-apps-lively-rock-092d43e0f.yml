@@ -22,21 +22,11 @@ jobs:
           submodules: true
           lfs: false
           
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Cache Node Install
+        uses: Andrews-McMeel-Universal/cache-next-install@v1.2.0
         with:
-          node-version: '22.x'
-
-      - name: Setup Node.js 2
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22.x'
-          
-      - name: Build app
-        run: |
-          npm install
-          npm run build         
-        working-directory: ./
+          node-version: '22.x'   
+                  
         
       - name: Build And Deploy
         id: builddeploy
@@ -46,10 +36,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           app_location: '/'
-          output_location: ''
-          #skip_app_build: true
-          skip_api_build: true
-          is_static_export: true
+          app_artifact_location: 'dist'
           
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
