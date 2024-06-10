@@ -22,10 +22,10 @@ jobs:
           submodules: true
           lfs: false
           
-      - name: Instalar Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '22.2.0' # Puedes especificar la versión que necesites
+          node-version: '22.x'
           
       - name: Build app
         run: |
